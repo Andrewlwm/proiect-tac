@@ -4,9 +4,16 @@ class AFD {
   private alphabet: string[]
   private transitions: number[][]
   private accepting_states: number[]
+  private transitions_without_final_state: number[][]
+  private equivalent: number[]
   constructor() {}
 
+  get is_minimized() {
+    return this.equivalent.length
+  }
+
   init_for_ab(): void {
+    // (a|b)*abb
     this.alphabet = ['a', 'b']
     this.transitions = [
       [1, 2],
@@ -20,21 +27,43 @@ class AFD {
 
   init_for_abc(): void {
     this.alphabet = ['a', 'b', 'c']
+    // (a|b|c)*abbc
     this.transitions = [
       [1, 2, 3],
-      [1, 2, 4],
+      [1, 4, 3],
       [1, 2, 3],
       [1, 2, 3],
       [1, 5, 3],
-      [1, 6, 3],
+      [1, 2, 6],
       [1, 2, 3],
     ]
     this.accepting_states = [6]
   }
 
+  minimize(): void {
+    this.equivalent = []
+    this.transitions_without_final_state = this.transitions.filter(
+      (_, i) => i !== this.transitions.length - 1
+    )
+    this.transitions_without_final_state.forEach((e, index, array) => {
+      const arrayWithoutE = array.filter(
+        (_, i) => ![this.equivalent, index].includes(i)
+      )
+      let found
+      for (const elem of arrayWithoutE) {
+        if (arraysEqual(elem, e)) {
+          this.equivalent.push(index)
+          found = true
+          continue
+        }
+      }
+      if (found) return
+    })
+  }
+
   simulate(input: string): void {
     let charIndex
-    let from = 0
+    let from = 0 // A, starea initiala
     let to
     const A = 'A'.charCodeAt(0)
 
@@ -42,7 +71,15 @@ class AFD {
 
     Array.from(input).forEach((char) => {
       charIndex = this.alphabet.indexOf(char)
-      to = this.transitions[from][charIndex]
+      const transition = this.transitions[from][charIndex]
+
+      if (this.is_minimized) {
+        to = this.equivalent.includes(transition)
+          ? this.equivalent[0]
+          : transition
+      } else {
+        to = transition
+      }
 
       console.info(
         `${char} (${charIndex}) ${String.fromCharCode(
@@ -58,6 +95,17 @@ class AFD {
   }
 }
 
+function arraysEqual(a, b) {
+  if (a === b) return true
+  if (a == null || b == null) return false
+  if (a.length !== b.length) return false
+
+  for (let i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false
+  }
+  return true
+}
+
 function handleFile(err: any, data: string): void {
   if (err) throw err
 
@@ -65,6 +113,7 @@ function handleFile(err: any, data: string): void {
   if (data.includes('c')) afd.init_for_abc()
   else afd.init_for_ab()
 
+  afd.minimize()
   data.split('\n').forEach((e) => afd.simulate(e))
 }
 
@@ -73,4 +122,4 @@ function run_simulations(type: 'ab' | 'abc'): void {
 }
 
 run_simulations('ab')
-run_simulations('abc')
+// run_simulations('abc')

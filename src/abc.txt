@@ -17,4 +17,5 @@ aaaabcacbbcacabc
 abcbcabbacbbcca
 bbcbaaaabaacccaabcbcba
 abaccaaaaacaab
-bacaabbababbabbaabcaabbacbb
+bacaabbababbacbbaabcaabbacbb
+aabbabcaabcbcbbbbbbcbbbaabbc
