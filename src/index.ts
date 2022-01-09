@@ -81,13 +81,9 @@ class AFD {
       charIndex = this.alphabet.indexOf(char)
       const transition = this.transitions[from][charIndex]
 
-      if (this.equivalents.length) {
-        to = this.equivalents.includes(transition)
-          ? this.equivalents[0]
-          : transition
-      } else {
-        to = transition
-      }
+      to = this.equivalents?.includes(transition)
+        ? this.equivalents[0]
+        : transition
 
       console.info(
         `${char} (${charIndex}) ${String.fromCharCode(
@@ -110,7 +106,7 @@ function handleFile(err: any, data: string): void {
   if (data.includes('c')) afd.init_for_abc()
   else afd.init_for_ab()
 
-  afd.minimize()
+  // afd.minimize()
   data.split('\n').forEach((e) => afd.simulate(e))
 }
 
