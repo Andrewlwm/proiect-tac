@@ -4,13 +4,8 @@ class AFD {
   private alphabet: string[]
   private transitions: number[][]
   private accepting_states: number[]
-  private transitions_without_final_state: number[][]
-  private equivalent: number[]
+  private equivalents: number[]
   constructor() {}
-
-  get is_minimized() {
-    return this.equivalent.length
-  }
 
   init_for_ab(): void {
     // (a|b)*abb
@@ -41,21 +36,37 @@ class AFD {
   }
 
   minimize(): void {
-    this.equivalent = []
-    this.transitions_without_final_state = this.transitions.filter(
-      (_, i) => i !== this.transitions.length - 1
-    )
-    this.transitions_without_final_state.forEach((e, index, array) => {
-      const arrayWithoutE = array.filter(
-        (_, i) => ![this.equivalent, index].includes(i)
-      )
-      for (const elem of arrayWithoutE) {
-        if (arraysEqual(elem, e)) {
-          this.equivalent.push(index)
-          continue
-        }
-      }
+    const final_state_indexes = new Set<number>()
+    const non_final_state_indexes = new Set<number>()
+
+    this.transitions.forEach((_, index) => {
+      if (this.accepting_states.includes(index)) {
+        final_state_indexes.add(index)
+      } else if (!final_state_indexes.has(index))
+        non_final_state_indexes.add(index)
     })
+
+    let previousViableSet = non_final_state_indexes
+    let newViableSet = new Set<number>()
+    let firstRun = true
+    do {
+      if (!firstRun) previousViableSet = newViableSet
+      newViableSet = Array.from(previousViableSet).reduce((acc, crt) => {
+        let viable = true
+        const next = acc.size ? Array.from(acc)[acc.size - 1] : crt + 1
+        for (let i = 0; i < this.transitions[crt].length; i++) {
+          if (this.transitions[crt][i] !== this.transitions[next][i])
+            if (!previousViableSet.has(this.transitions[crt][i])) {
+              viable = false
+            }
+        }
+        if (viable) acc.add(crt)
+        return acc
+      }, new Set<number>())
+      firstRun = false
+    } while (previousViableSet.size !== newViableSet.size)
+
+    this.equivalents = Array.from(newViableSet)
   }
 
   simulate(input: string): void {
@@ -70,9 +81,9 @@ class AFD {
       charIndex = this.alphabet.indexOf(char)
       const transition = this.transitions[from][charIndex]
 
-      if (this.is_minimized) {
-        to = this.equivalent.includes(transition)
-          ? this.equivalent[0]
+      if (this.equivalents.length) {
+        to = this.equivalents.includes(transition)
+          ? this.equivalents[0]
           : transition
       } else {
         to = transition
@@ -118,5 +129,5 @@ function run_simulations(type: 'ab' | 'abc'): void {
   fs.readFile(`src/${type}.txt`, 'utf8', handleFile)
 }
 
+// run_simulations('ab')
 run_simulations('abc')
-// run_simulations('abc')

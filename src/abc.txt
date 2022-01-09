@@ -18,4 +18,4 @@ abcbcabbacbbcca
 bbcbaaaabaacccaabcbcba
 abaccaaaaacaab
 bacaabbababbacbbaabcaabbacbb
-aabbabcaabcbcbbbbbbcbbbaabbc
+aabbabcaabcbcabbcbbbbcbbbaabbc
