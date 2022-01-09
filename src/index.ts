@@ -103,17 +103,6 @@ class AFD {
   }
 }
 
-function arraysEqual(a, b) {
-  if (a === b) return true
-  if (a == null || b == null) return false
-  if (a.length !== b.length) return false
-
-  for (let i = 0; i < a.length; ++i) {
-    if (a[i] !== b[i]) return false
-  }
-  return true
-}
-
 function handleFile(err: any, data: string): void {
   if (err) throw err
 
@@ -129,5 +118,5 @@ function run_simulations(type: 'ab' | 'abc'): void {
   fs.readFile(`src/${type}.txt`, 'utf8', handleFile)
 }
 
-// run_simulations('ab')
-run_simulations('abc')
+run_simulations('ab')
+// run_simulations('abc')
