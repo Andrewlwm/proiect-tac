@@ -49,15 +49,12 @@ class AFD {
       const arrayWithoutE = array.filter(
         (_, i) => ![this.equivalent, index].includes(i)
       )
-      let found
       for (const elem of arrayWithoutE) {
         if (arraysEqual(elem, e)) {
           this.equivalent.push(index)
-          found = true
           continue
         }
       }
-      if (found) return
     })
   }
 
@@ -121,5 +118,5 @@ function run_simulations(type: 'ab' | 'abc'): void {
   fs.readFile(`src/${type}.txt`, 'utf8', handleFile)
 }
 
-run_simulations('ab')
+run_simulations('abc')
 // run_simulations('abc')
