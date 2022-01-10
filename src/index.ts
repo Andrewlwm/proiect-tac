@@ -40,10 +40,8 @@ class AFD {
     const non_final_state_indexes = new Set<number>()
 
     this.transitions.forEach((_, index) => {
-      if (this.accepting_states.includes(index)) {
-        final_state_indexes.add(index)
-      } else if (!final_state_indexes.has(index))
-        non_final_state_indexes.add(index)
+      if (this.accepting_states.includes(index)) final_state_indexes.add(index)
+      else non_final_state_indexes.add(index)
     })
 
     let previousViableSet = non_final_state_indexes
