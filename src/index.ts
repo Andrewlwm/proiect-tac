@@ -1,10 +1,10 @@
 import * as fs from 'fs'
-
 class AFD {
   private alphabet: string[]
   private transitions: number[][]
   private accepting_states: number[]
   private equivalents: number[]
+
   constructor() {}
 
   init_for_ab(): void {
@@ -62,6 +62,8 @@ class AFD {
         return acc
       }, new Set<number>())
       firstRun = false
+
+      console.log(final_state_indexes, previousViableSet, newViableSet)
     } while (previousViableSet.size !== newViableSet.size)
 
     this.equivalents = Array.from(newViableSet)
@@ -91,7 +93,6 @@ class AFD {
 
       from = to
     })
-
     if (this.accepting_states.includes(from)) console.info('ACCEPTED\n')
     else console.warn('REJECTED\n')
   }
@@ -104,13 +105,19 @@ function handleFile(err: any, data: string): void {
   if (data.includes('c')) afd.init_for_abc()
   else afd.init_for_ab()
 
-  // afd.minimize()
+  afd.minimize()
   data.split('\n').forEach((e) => afd.simulate(e))
 }
 
-function run_simulations(type: 'ab' | 'abc'): void {
+function run_simulations(type?: 'ab' | 'abc'): void {
+  if (!type) {
+    handleFile(null, 'bababbbbabb')
+    handleFile(null, 'aabbabcaabcbcabbcbbbbcbbbaabbc')
+    return
+  }
   fs.readFile(`src/${type}.txt`, 'utf8', handleFile)
 }
 
-run_simulations('ab')
+run_simulations()
+// run_simulations('ab')
 // run_simulations('abc')
